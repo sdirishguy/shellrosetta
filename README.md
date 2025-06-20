@@ -6,6 +6,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 [![Shell](https://img.shields.io/badge/shell-interactive-blue)](#interactive-shell-mode)
 [![Tested](https://img.shields.io/badge/Tests-passing-brightgreen)](tests/)
+[![PyPI version](https://badge.fury.io/py/shellrosetta.svg)](https://pypi.org/project/shellrosetta/)
 
 ---
 
