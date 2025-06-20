@@ -1,15 +1,17 @@
 # shellrosetta/core.py
 
 import shlex
-import re
 from .mappings import (
+    LINUX_TO_PS, PS_TO_LINUX,
     LS_FLAGS_MAP, RM_FLAGS_MAP, CP_FLAGS_MAP, MV_FLAGS_MAP,
-    GREP_FLAGS_MAP, FIND_FLAGS_MAP, CAT_FLAGS_MAP,
-    NETWORK_CMD_MAP, PS_TO_LNX
+    GREP_FLAGS_MAP, FIND_FLAGS_MAP, CAT_FLAGS_MAP
 )
 
 def extract_flags_and_targets(args):
-    """Split arguments into flags and targets (paths/files)."""
+    """
+    Splits an argument list into 'flags' (like -a, -l) and everything else (targets).
+    Returns (flags, targets) as two lists.
+    """
     flags = []
     targets = []
     for arg in args:
@@ -19,113 +21,70 @@ def extract_flags_and_targets(args):
             targets.append(arg)
     return flags, targets
 
-def translate_ls(args):
+def try_direct_mapping(command, mapping_dict):
+    """
+    Attempts to find an exact match for a full command (with args) in the mapping dict.
+    Returns the mapped translation (with note, if any), or None.
+    """
+    if command in mapping_dict:
+        cmd, note = mapping_dict[command]
+        if note:
+            return f"{cmd} # [{note}]"
+        return cmd
+    return None
+
+def fallback_flag_translate(cmd, args):
+    """
+    If no exact mapping is found, try to reconstruct a translation using per-command flag maps.
+    This covers most real-life flag combos (e.g. ls -alh, rm -rf).
+    """
     flags, targets = extract_flags_and_targets(args)
     flagkey = "".join(sorted(flags))
-    flags_out = LS_FLAGS_MAP.get(flagkey, None)
-    base = "Get-ChildItem"
-    out = base
-    if flags_out:
-        out += f" {flags_out}"
-    if targets:
-        out += " " + " ".join(targets)
-    if not flags_out and flags:
-        out += f" # [No direct PowerShell equivalent for flags: {', '.join(flags)}]"
-    return out.strip()
+    base = ""
+    flagmap = None
 
-def translate_rm(args):
-    flags, targets = extract_flags_and_targets(args)
-    flagkey = "".join(sorted(flags))
-    flags_out = RM_FLAGS_MAP.get(flagkey, None)
-    base = "Remove-Item"
-    out = base
-    if flags_out:
-        out += f" {flags_out}"
-    if targets:
-        out += " " + " ".join(targets)
-    if not flags_out and flags:
-        out += f" # [No direct PowerShell equivalent for flags: {', '.join(flags)}]"
-    return out.strip()
+    # Pick the right flag mapping for the command
+    if cmd == "ls":
+        base = "Get-ChildItem"
+        flagmap = LS_FLAGS_MAP
+    elif cmd == "rm":
+        base = "Remove-Item"
+        flagmap = RM_FLAGS_MAP
+    elif cmd == "cp":
+        base = "Copy-Item"
+        flagmap = CP_FLAGS_MAP
+    elif cmd == "mv":
+        base = "Move-Item"
+        flagmap = MV_FLAGS_MAP
+    elif cmd == "grep":
+        base = "Select-String"
+        flagmap = GREP_FLAGS_MAP
+    elif cmd == "find":
+        base = "Get-ChildItem -Recurse"
+        flagmap = FIND_FLAGS_MAP
+    elif cmd == "cat":
+        base = "Get-Content"
+        flagmap = CAT_FLAGS_MAP
 
-def translate_cp(args):
-    flags, targets = extract_flags_and_targets(args)
-    flagkey = "".join(sorted(flags))
-    flags_out = CP_FLAGS_MAP.get(flagkey, None)
-    base = "Copy-Item"
-    out = base
-    if flags_out:
-        out += f" {flags_out}"
-    if targets:
-        out += " " + " ".join(targets)
-    if not flags_out and flags:
-        out += f" # [No direct PowerShell equivalent for flags: {', '.join(flags)}]"
-    return out.strip()
+    # If we have a flag map, try to find a translation for these flags
+    if flagmap is not None:
+        flags_out = flagmap.get(flagkey, None)
+        out = base
+        if flags_out:
+            out += f" {flags_out}"
+        if targets:
+            out += " " + " ".join(targets)
+        if not flags_out and flags:
+            out += f" # [No direct PowerShell equivalent for flags: {', '.join(flags)}]"
+        return out.strip()
 
-def translate_mv(args):
-    flags, targets = extract_flags_and_targets(args)
-    flagkey = "".join(sorted(flags))
-    flags_out = MV_FLAGS_MAP.get(flagkey, None)
-    base = "Move-Item"
-    out = base
-    if flags_out:
-        out += f" {flags_out}"
-    if targets:
-        out += " " + " ".join(targets)
-    if not flags_out and flags:
-        out += f" # [No direct PowerShell equivalent for flags: {', '.join(flags)}]"
-    return out.strip()
-
-def translate_grep(args):
-    flags, targets = extract_flags_and_targets(args)
-    flagkey = "".join(sorted(flags))
-    flags_out = GREP_FLAGS_MAP.get(flagkey, None)
-    base = "Select-String"
-    out = base
-    if flags_out:
-        out += f" {flags_out}"
-    if targets:
-        out += " " + " ".join(targets)
-    if not flags_out and flags:
-        out += f" # [No direct PowerShell equivalent for flags: {', '.join(flags)}]"
-    return out.strip()
-
-def translate_find(args):
-    flags, targets = extract_flags_and_targets(args)
-    base = "Get-ChildItem -Recurse"
-    out = base
-    if "-name" in flags:
-        try:
-            idx = args.index("-name")
-            pattern = args[idx + 1] if idx + 1 < len(args) else ""
-            out += f' -Filter "{pattern}"'
-        except Exception:
-            pass
-    if targets:
-        out += " " + " ".join(targets)
-    return out.strip()
-
-def translate_cat(args):
-    flags, targets = extract_flags_and_targets(args)
-    base = "Get-Content"
-    out = base
-    if targets:
-        out += " " + " ".join(targets)
-    if "-n" in flags:
-        out += " # [No direct PowerShell equivalent for line numbers]"
-    return out.strip()
-
-def translate_network(cmd, args):
-    base = NETWORK_CMD_MAP.get(cmd, None)
-    if not base:
-        return f"# [No PowerShell equivalent for networking command: {cmd}]"
-    if args:
-        return f"{base} {' '.join(args)}"
-    return base
-
-def generic_translate(cmd, args):
+    # No flag map, so we just have to say we don't know
     return f"# [No translation available for '{cmd}' with args '{' '.join(args)}']"
 
 def lnx2ps(command):
+    """
+    Translates a Linux command (possibly piped) to PowerShell.
+    """
     stages = [stage.strip() for stage in command.split('|')]
     translated = []
     for stage in stages:
@@ -134,42 +93,35 @@ def lnx2ps(command):
         tokens = shlex.split(stage)
         if not tokens:
             continue
-        cmd, *args = tokens
-        cmd_lc = cmd.lower()
-        if cmd_lc == "ls":
-            t = translate_ls(args)
-        elif cmd_lc == "rm":
-            t = translate_rm(args)
-        elif cmd_lc == "cp":
-            t = translate_cp(args)
-        elif cmd_lc == "mv":
-            t = translate_mv(args)
-        elif cmd_lc == "grep":
-            t = translate_grep(args)
-        elif cmd_lc == "find":
-            t = translate_find(args)
-        elif cmd_lc == "cat":
-            t = translate_cat(args)
-        elif cmd_lc in NETWORK_CMD_MAP:
-            t = translate_network(cmd_lc, args)
+        cmd = tokens[0].lower()
+        args = tokens[1:]
+        # Try a direct mapping first (whole command)
+        trymap = " ".join([cmd] + args) if args else cmd
+        direct = try_direct_mapping(trymap, LINUX_TO_PS)
+        if direct:
+            translated.append(direct)
         else:
-            t = generic_translate(cmd, args)
-        translated.append(t)
+            # Fallback to flag-aware translation
+            fallback = fallback_flag_translate(cmd, args)
+            translated.append(fallback)
     return " | ".join(translated)
 
 def ps2lnx(command):
+    """
+    Translates a PowerShell command (possibly piped) to Linux.
+    """
     stages = [stage.strip() for stage in command.split('|')]
     translated = []
     for stage in stages:
-        norm_stage = re.sub(r'\s+', ' ', stage)
-        found = PS_TO_LNX.get(norm_stage, None)
-        if found:
-            translated.append(found)
+        direct = try_direct_mapping(stage, PS_TO_LINUX)
+        if direct:
+            translated.append(direct)
         else:
+            # fallback: try base command match
             first_word = stage.split()[0]
-            match = [k for k in PS_TO_LNX if k.startswith(first_word)]
-            if match:
-                translated.append(PS_TO_LNX[match[0]])
+            base_direct = try_direct_mapping(first_word, PS_TO_LINUX)
+            if base_direct:
+                translated.append(base_direct)
             else:
                 translated.append(f"# [No Linux equivalent for: {stage}]")
     return " | ".join(translated)
