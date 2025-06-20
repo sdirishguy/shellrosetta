@@ -1,1 +1,50 @@
-__pycache__/\n*.pyc\n*.egg-info/\n.env\n.venv\n.DS_Store
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.env
+.venv/
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+env.bk/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE folders and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Test, coverage, and profiling
+.coverage
+.cache/
+.tox/
+.nox/
+.pytest_cache/
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Other
+*.log
+.docx
