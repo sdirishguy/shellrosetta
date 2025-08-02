@@ -1,0 +1,16 @@
+# Core dependencies
+# No external dependencies required for basic functionality
+
+# Optional dependencies for enhanced features
+flask>=2.0.0          # For web API
+flask-cors>=3.0.0     # For CORS support
+colorama>=0.4.4        # For Windows color support
+click>=8.0.0          # For advanced CLI features
+rich>=10.0.0          # For rich terminal output
+
+# Development dependencies
+pytest>=6.0.0
+pytest-cov>=2.0.0
+black>=21.0.0
+flake8>=3.8.0
+mypy>=0.800 
