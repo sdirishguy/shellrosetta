@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='shellrosetta',
-    version='1.0.0',
+    version='1.1.0',
     packages=find_packages(),
     include_package_data=True,
     entry_points={
@@ -12,7 +12,7 @@ setup(
     },
     author='David Donohue',
     author_email='david@opfynder.com',
-    description='Translate Linux/Bash commands to PowerShell and vice versa, with flag and pipeline support.',
+    description='Advanced Linux/Bash to PowerShell translator with ML, plugins, web API, and interactive shell support.',
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/sdirishguy/shellrosetta',
@@ -27,5 +27,8 @@ setup(
         'Topic :: System :: Shells',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: System Administrators',
+        'Intended Audience :: Information Technology',
     ],
 )
