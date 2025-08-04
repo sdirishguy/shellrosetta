@@ -113,7 +113,7 @@ You'll be prompted for your translation mode (lnx2ps or ps2lnx). Enter commands 
 
 **Example session:**
 
-```
+```shell
 $ shellrosetta
 =================================================================
 ShellRosetta: Linux ↔ PowerShell CLI Command Translator

@@ -17,7 +17,6 @@ class NodeType(Enum):
     CONDITIONAL = "conditional"
 
 @dataclass
-
 class ASTNode:
     """Abstract Syntax Tree node for command parsing"""
     node_type: NodeType

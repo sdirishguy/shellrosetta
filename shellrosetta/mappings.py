@@ -135,7 +135,6 @@ PS_TO_LINUX = {
     "Stop-Process -Name": ("pkill", None),
     "Get-Process -Name": ("pgrep", None),
     "Select-String": ("grep", None),
-    "Get-ChildItem -Recurse": ("find", None),
     "Get-ComputerInfo | Select-Object OsName,OsVersion,OsArchitecture": ("uname -a", None),
     "whoami": ("whoami", None),
     "Get-PSDrive": ("df -h", None),

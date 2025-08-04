@@ -135,8 +135,7 @@ class MLEngine:
         except Exception as e:
             print(f"Failed to save suggestions: {e}")
 
-    def learn_pattern(self, command: str, translation: str, direction: str,
-                     success: bool = True):
+    def learn_pattern(self, command: str, translation: str, direction: str,success: bool = True):
         """Learn a new command pattern"""
         key = f"{direction}:{command}"
 
