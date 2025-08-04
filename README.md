@@ -8,15 +8,12 @@
 [![Tested](https://img.shields.io/badge/Tests-passing-brightgreen)](tests/)
 [![PyPI version](https://badge.fury.io/py/shellrosetta.svg)](https://pypi.org/project/shellrosetta/)
 [![codecov](https://codecov.io/github/sdirishguy/shellrosetta/branch/main/graph/badge.svg?token=6X3X6MK47L)](https://codecov.io/github/sdirishguy/shellrosetta)
----
 
 ## What is ShellRosetta?
 
 ShellRosetta is a cross-platform CLI tool for developers, sysadmins, and anyone switching between Windows and Linux.
 
 It instantly translates commands—including flags and arguments—between Linux/Bash and PowerShell. No more flipping between cheat sheets or Stack Overflow!
-
----
 
 ## Features
 
@@ -34,8 +31,6 @@ It instantly translates commands—including flags and arguments—between Linux
 - 🌐 **Web API:** REST API and beautiful web interface for programmatic access.
 - 📊 **Advanced Features:** AST parsing, configuration management, and comprehensive testing.
 
----
-
 ## What's New in v1.1.0
 
 - ✅ **Fixed all markdownlint formatting issues** in documentation
@@ -43,8 +38,6 @@ It instantly translates commands—including flags and arguments—between Linux
 - ✅ **Improved documentation** with proper markdown formatting
 - ✅ **Resolved import dependencies** (flask-cors installation)
 - ✅ **Better cross-platform support** with readline handling for Windows
-
----
 
 ## Quickstart
 
