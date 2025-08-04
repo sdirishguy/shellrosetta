@@ -1,6 +1,5 @@
 # shellrosetta/config.py
-
-
+from pathlib import Path
 import os
 import json
 class Config:

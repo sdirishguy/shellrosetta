@@ -1,6 +1,6 @@
 # shellrosetta/utils.py
 
-
+from .config import config
 import os
 import sys
 class Colors:

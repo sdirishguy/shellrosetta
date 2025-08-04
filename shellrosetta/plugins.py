@@ -8,6 +8,8 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any, Callable
 import json
+import shutil
+
 
 class CommandPlugin(ABC):
     """Base class for command translation plugins"""

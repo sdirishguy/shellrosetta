@@ -1,5 +1,10 @@
 # shellrosetta/cli.py
 
+from .config import config
+from .plugins import plugin_manager
+from .ml_engine import ml_engine
+from .utils import print_header, print_translation, sanitize_command, format_command_history
+from .api import run_api_server
 
 import sys
 try:
