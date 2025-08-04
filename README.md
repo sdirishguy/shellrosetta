@@ -7,7 +7,7 @@
 [![Shell](https://img.shields.io/badge/shell-interactive-blue)](#interactive-shell-mode)
 [![Tested](https://img.shields.io/badge/Tests-passing-brightgreen)](tests/)
 [![PyPI version](https://badge.fury.io/py/shellrosetta.svg)](https://pypi.org/project/shellrosetta/)
-
+[![codecov](https://codecov.io/github/sdirishguy/shellrosetta/branch/main/graph/badge.svg?token=6X3X6MK47L)](https://codecov.io/github/sdirishguy/shellrosetta)
 ---
 
 ## What is ShellRosetta?
