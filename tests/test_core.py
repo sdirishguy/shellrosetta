@@ -1,7 +1,9 @@
 # tests/test_core.py
 
 
+import unittest
 from shellrosetta.core import lnx2ps, ps2lnx
+
 class TestShellRosettaCore(unittest.TestCase):
     def test_ls_translation(self):
         self.assertIn("Get-ChildItem", lnx2ps("ls"))
