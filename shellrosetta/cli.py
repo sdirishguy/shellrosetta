@@ -1,18 +1,14 @@
 # shellrosetta/cli.py
 
+
 import sys
 try:
     import readline
 except ImportError:
     # readline not available on Windows
     pass
-from .core import lnx2ps, ps2lnx
-from .utils import print_header, print_translation, print_warning, print_note, sanitize_command, format_command_history
-from .config import config
-from .ml_engine import ml_engine
-from .plugins import plugin_manager
-from .api import run_api_server
 
+from .core import lnx2ps, ps2lnx
 def show_help():
     print_header()
     print("Usage:")
@@ -31,15 +27,16 @@ def show_help():
     print("  shellrosetta api --port 8080  # Start API on port 8080")
     print("=" * 65)
 
+
 def run_interactive():
     print_header()
     print("Welcome to ShellRosetta Interactive Mode!")
     print("Type 'exit' to quit, 'mode' to switch translation direction, or 'help' for commands.")
-    
+
     # Initialize history
     history = []
     mode = ""
-    
+
     # Ask user for translation direction
     while mode not in ("lnx2ps", "ps2lnx"):
         mode = input("Mode [lnx2ps/ps2lnx] (or 'exit'): ").strip().lower()
@@ -49,16 +46,16 @@ def run_interactive():
         if mode == "help":
             show_interactive_help()
             continue
-    
+
     print(f"Type your {mode.upper()} commands below. Type 'mode' to switch, 'exit' to quit.\n")
-    
+
     while True:
         try:
             inp = input("> ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nGoodbye!")
             break
-        
+
         if inp.lower() == "exit":
             print("Goodbye!")
             break
@@ -88,28 +85,29 @@ def run_interactive():
                     print(f"Switched to {mode.upper()} mode.\n")
                     break
             continue
-        
+
         if not inp:
             continue
-        
+
         # Sanitize command
         sanitized = sanitize_command(inp)
         if sanitized is None:
             continue
-        
+
         # Translate command
         if mode == "lnx2ps":
             translated = lnx2ps(sanitized)
         else:
             translated = ps2lnx(sanitized)
-        
+
         # Store in history
         history.append((sanitized, translated, mode))
         if len(history) > config.get('max_history', 100):
             history.pop(0)
-        
+
         # Print translation
         print_translation(sanitized, translated, mode)
+
 
 def show_interactive_help():
     """Show help for interactive mode"""
@@ -124,12 +122,14 @@ def show_interactive_help():
     print("  exit          - Exit interactive mode")
     print()
 
+
 def show_config():
     """Show current configuration"""
     print("\nCurrent Configuration:")
     for key, value in config.config.items():
         print(f"  {key}: {value}")
     print()
+
 
 def show_plugins():
     """Show available plugins"""
@@ -146,16 +146,17 @@ def show_plugins():
         print("  No plugins available")
     print()
 
+
 def show_ml_insights():
     """Show machine learning insights"""
     print("\nMachine Learning Insights:")
     analysis = ml_engine.analyze_patterns()
-    
+
     if analysis:
         print(f"  Total Patterns: {analysis.get('total_patterns', 0)}")
         print(f"  Success Rate: {analysis.get('success_rate', 0):.1%}")
         print(f"  Command Types: {dict(analysis.get('command_types', {}))}")
-        
+
         top_patterns = analysis.get('top_successful_patterns', [])
         if top_patterns:
             print("\n  Top Successful Patterns:")
@@ -165,12 +166,13 @@ def show_ml_insights():
         print("  No patterns learned yet")
     print()
 
+
 def main():
     # If no args, drop into interactive mode
     if len(sys.argv) == 1:
         run_interactive()
         return
-    
+
     # Handle special commands
     if len(sys.argv) == 2:
         if sys.argv[1] in ('-h', '--help', 'help'):
@@ -191,25 +193,25 @@ def main():
         elif sys.argv[1] == 'api':
             run_api_server()
             return
-    
+
     if len(sys.argv) < 3:
         show_help()
         sys.exit(1)
-    
+
     mode = sys.argv[1].lower()
     if mode not in ['lnx2ps', 'ps2lnx']:
         print("Unknown mode:", mode)
         show_help()
         sys.exit(1)
-    
+
     command = sys.argv[2]
     sanitized = sanitize_command(command)
     if sanitized is None:
         sys.exit(1)
-    
+
     print_header()
     print(f"Original command: {command}\n")
-    
+
     if mode == "lnx2ps":
         translated = lnx2ps(sanitized)
         print_translation(command, translated, mode)

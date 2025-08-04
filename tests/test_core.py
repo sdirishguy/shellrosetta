@@ -1,8 +1,7 @@
 # tests/test_core.py
 
-import unittest
-from shellrosetta.core import lnx2ps, ps2lnx
 
+from shellrosetta.core import lnx2ps, ps2lnx
 class TestShellRosettaCore(unittest.TestCase):
     def test_ls_translation(self):
         self.assertIn("Get-ChildItem", lnx2ps("ls"))
@@ -13,7 +12,7 @@ class TestShellRosettaCore(unittest.TestCase):
     def test_rm_translation(self):
         self.assertIn("Remove-Item", lnx2ps("rm"))
         self.assertIn("-Recurse -Force", lnx2ps("rm -rf /tmp/test"))
-    
+
     def test_ps2lnx(self):
         self.assertIn("ls", ps2lnx("Get-ChildItem"))
         self.assertIn("ls -a", ps2lnx("Get-ChildItem -Force"))
@@ -24,7 +23,7 @@ class TestShellRosettaCore(unittest.TestCase):
         result = lnx2ps("ls -alh | grep error")
         self.assertIn("Get-ChildItem -Force | Format-List", result)
         self.assertIn("Select-String error", result)
-        
+
         # Test PowerShell to Linux pipelines
         result = ps2lnx("Get-ChildItem -Force | Select-String error")
         self.assertIn("ls -a", result)
@@ -64,11 +63,11 @@ class TestShellRosettaCore(unittest.TestCase):
         # Test edge cases and error handling
         self.assertIn("No translation", lnx2ps("nonexistent_command"))
         self.assertIn("No Linux equivalent", ps2lnx("Get-NonexistentCommand"))
-        
+
         # Test empty input
         self.assertEqual(lnx2ps(""), "")
         self.assertEqual(ps2lnx(""), "")
-        
+
         # Test whitespace-only input
         self.assertEqual(lnx2ps("   "), "")
         self.assertEqual(ps2lnx("   "), "")

@@ -12,9 +12,6 @@ except ImportError:
     render_template_string = None
     CORS = None
 
-import os
-import sys
-from typing import Dict, Any, Optional
 from .core import lnx2ps, ps2lnx
 from .ml_engine import ml_engine
 from .plugins import plugin_manager
@@ -138,7 +135,7 @@ HTML_TEMPLATE = """
 <body>
     <div class="container">
         <h1>🔄 ShellRosetta Command Translator</h1>
-        
+
         <div class="input-section">
             <div class="input-group">
                 <label for="direction">Translation Direction:</label>
@@ -156,10 +153,10 @@ HTML_TEMPLATE = """
                 <button onclick="translate()">Translate</button>
             </div>
         </div>
-        
+
         <div id="result" class="result" style="display: none;"></div>
         <div id="suggestions" class="suggestions"></div>
-        
+
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-number" id="totalTranslations">0</div>
@@ -180,12 +177,12 @@ HTML_TEMPLATE = """
         async function translate() {
             const command = document.getElementById('command').value;
             const direction = document.getElementById('direction').value;
-            
+
             if (!command.trim()) {
                 alert('Please enter a command');
                 return;
             }
-            
+
             try {
                 const response = await fetch('/api/translate', {
                     method: 'POST',
@@ -197,13 +194,13 @@ HTML_TEMPLATE = """
                         direction: direction
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 const resultDiv = document.getElementById('result');
                 resultDiv.style.display = 'block';
                 resultDiv.textContent = data.translation;
-                
+
                 // Show suggestions if available
                 if (data.suggestions && data.suggestions.length > 0) {
                     const suggestionsDiv = document.getElementById('suggestions');
@@ -218,33 +215,33 @@ HTML_TEMPLATE = """
                         suggestionsDiv.appendChild(div);
                     });
                 }
-                
+
                 // Update stats
                 updateStats();
-                
+
             } catch (error) {
                 console.error('Error:', error);
                 alert('Translation failed. Please try again.');
             }
         }
-        
+
         async function updateStats() {
             try {
                 const response = await fetch('/api/stats');
                 const data = await response.json();
-                
+
                 document.getElementById('totalTranslations').textContent = data.total_translations || 0;
-                document.getElementById('successRate').textContent = 
+                document.getElementById('successRate').textContent =
                     Math.round((data.success_rate || 0) * 100) + '%';
                 document.getElementById('learnedPatterns').textContent = data.learned_patterns || 0;
             } catch (error) {
                 console.error('Error fetching stats:', error);
             }
         }
-        
+
         // Load stats on page load
         updateStats();
-        
+
         // Allow Enter key to trigger translation
         document.getElementById('command').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -256,15 +253,16 @@ HTML_TEMPLATE = """
 </html>
 """
 
+
 def run_api_server(host='0.0.0.0', port=5000, debug=False):
     """Run the API server"""
     if not FLASK_AVAILABLE:
         print("Error: Flask is not installed. Install it with: pip install flask flask-cors")
         return
-    
+
     app = Flask(__name__)
     CORS(app)  # Enable CORS for all routes
-    
+
     @app.route('/')
     def index():
         """Serve the web interface"""
@@ -277,22 +275,22 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
             data = request.get_json()
             command = data.get('command', '').strip()
             direction = data.get('direction', 'lnx2ps')
-            
+
             if not command:
                 return jsonify({'error': 'No command provided'}), 400
-            
+
             # Try plugin translation first
             plugin_translation = plugin_manager.translate_with_plugins(command, direction)
-            
+
             # Try ML translation
             ml_translation = ml_engine.get_best_translation(command, direction)
-            
+
             # Use core translation
             if direction == 'lnx2ps':
                 translation = lnx2ps(command)
             else:
                 translation = ps2lnx(command)
-            
+
             # Prefer plugin translation, then ML, then core
             if plugin_translation:
                 final_translation = plugin_translation
@@ -303,14 +301,14 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
             else:
                 final_translation = translation
                 source = 'core'
-            
+
             # Learn the pattern
             ml_engine.learn_pattern(command, final_translation, direction, success=True)
-            
+
             # Get suggestions
             suggestions = ml_engine.get_suggestions(command, direction, limit=3)
             suggestion_texts = [s[0] for s in suggestions]
-            
+
             return jsonify({
                 'translation': final_translation,
                 'source': source,
@@ -318,7 +316,7 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
                 'command': command,
                 'direction': direction
             })
-            
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -327,7 +325,7 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
         """Get translation statistics"""
         try:
             analysis = ml_engine.analyze_patterns()
-            
+
             return jsonify({
                 'total_translations': analysis.get('total_patterns', 0),
                 'success_rate': analysis.get('success_rate', 0),
@@ -335,7 +333,7 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
                 'command_types': analysis.get('command_types', {}),
                 'top_patterns': analysis.get('top_successful_patterns', [])
             })
-            
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -345,7 +343,7 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
         try:
             plugins = plugin_manager.list_plugins()
             return jsonify({'plugins': plugins})
-            
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -358,7 +356,7 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
                 return jsonify(plugin.get_metadata())
             else:
                 return jsonify({'error': 'Plugin not found'}), 404
-                
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -371,13 +369,13 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
             translation = data.get('translation')
             direction = data.get('direction')
             success = data.get('success', True)
-            
+
             if not all([command, translation, direction]):
                 return jsonify({'error': 'Missing required fields'}), 400
-            
+
             ml_engine.learn_pattern(command, translation, direction, success)
             return jsonify({'message': 'Pattern learned successfully'})
-            
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -387,17 +385,17 @@ def run_api_server(host='0.0.0.0', port=5000, debug=False):
         try:
             data = request.get_json()
             days = data.get('days', 30)
-            
+
             ml_engine.cleanup_old_patterns(days)
             return jsonify({'message': f'Cleaned up patterns older than {days} days'})
-            
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
     print(f"Starting ShellRosetta API server on http://{host}:{port}")
     print("Press Ctrl+C to stop the server")
-    
+
     app.run(host=host, port=port, debug=debug)
 
 if __name__ == '__main__':
-    run_api_server() 
+    run_api_server()

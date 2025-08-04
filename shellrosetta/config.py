@@ -1,12 +1,11 @@
 # shellrosetta/config.py
 
+
 import os
 import json
-from pathlib import Path
-
 class Config:
     """Configuration management for ShellRosetta"""
-    
+
     def __init__(self):
         self.config_dir = Path.home() / ".shellrosetta"
         self.config_file = self.config_dir / "config.json"
@@ -19,7 +18,7 @@ class Config:
             "auto_complete": True
         }
         self.config = self.load_config()
-    
+
     def load_config(self):
         """Load configuration from file or create default"""
         if self.config_file.exists():
@@ -38,7 +37,7 @@ class Config:
             self.config_dir.mkdir(exist_ok=True)
             self.save_config(self.default_config)
             return self.default_config.copy()
-    
+
     def save_config(self, config=None):
         """Save configuration to file"""
         if config is None:
@@ -48,20 +47,20 @@ class Config:
                 json.dump(config, f, indent=2)
         except IOError:
             pass  # Silently fail if we can't write config
-    
+
     def get(self, key, default=None):
         """Get configuration value"""
         return self.config.get(key, default)
-    
+
     def set(self, key, value):
         """Set configuration value"""
         self.config[key] = value
         self.save_config()
-    
+
     def reset(self):
         """Reset to default configuration"""
         self.config = self.default_config.copy()
         self.save_config()
 
 # Global config instance
-config = Config() 
+config = Config()

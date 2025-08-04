@@ -1,15 +1,11 @@
 # shellrosetta/core.py
 
-import shlex
+
 from typing import Optional, Tuple
-from .mappings import (
     LINUX_TO_PS, PS_TO_LINUX,
     LS_FLAGS_MAP, RM_FLAGS_MAP, CP_FLAGS_MAP, MV_FLAGS_MAP,
     GREP_FLAGS_MAP, FIND_FLAGS_MAP, CAT_FLAGS_MAP
 )
-from .parser import parser
-from .plugins import plugin_manager
-from .ml_engine import ml_engine
 
 def extract_flags_and_targets(args):
     """
@@ -25,6 +21,7 @@ def extract_flags_and_targets(args):
             targets.append(arg)
     return flags, targets
 
+
 def try_direct_mapping(command, mapping_dict):
     """
     Attempts to find an exact match for a full command (with args) in the mapping dict.
@@ -36,6 +33,7 @@ def try_direct_mapping(command, mapping_dict):
             return f"{cmd} # [{note}]"
         return cmd
     return None
+
 
 def fallback_flag_translate(cmd, args):
     """
@@ -85,37 +83,38 @@ def fallback_flag_translate(cmd, args):
     # No flag map, so we just have to say we don't know
     return f"# [No translation available for '{cmd}' with args '{' '.join(args)}']"
 
+
 def lnx2ps(command: str, use_ml: bool = True, use_plugins: bool = True) -> str:
     """
     Translates a Linux command (possibly piped) to PowerShell.
-    
+
     Args:
         command: The Linux command to translate
         use_ml: Whether to use machine learning suggestions
         use_plugins: Whether to use plugin translations
-    
+
     Returns:
         The PowerShell equivalent command
     """
     if not command.strip():
         return ""
-    
+
     # Try plugin translation first
     if use_plugins:
         plugin_translation = plugin_manager.translate_with_plugins(command, "lnx2ps")
         if plugin_translation:
             ml_engine.learn_pattern(command, plugin_translation, "lnx2ps", success=True)
             return plugin_translation
-    
+
     # Try ML translation
     if use_ml:
         ml_translation = ml_engine.get_best_translation(command, "lnx2ps")
         if ml_translation:
             return ml_translation
-    
+
     # Parse command with AST
     ast_root = parser.parse(command)
-    
+
     stages = [stage.strip() for stage in command.split('|')]
     translated = []
     for stage in stages:
@@ -135,46 +134,47 @@ def lnx2ps(command: str, use_ml: bool = True, use_plugins: bool = True) -> str:
             # Fallback to flag-aware translation
             fallback = fallback_flag_translate(cmd, args)
             translated.append(fallback)
-    
+
     result = " | ".join(translated)
-    
+
     # Learn the pattern
     if use_ml:
         ml_engine.learn_pattern(command, result, "lnx2ps", success=True)
-    
+
     return result
+
 
 def ps2lnx(command: str, use_ml: bool = True, use_plugins: bool = True) -> str:
     """
     Translates a PowerShell command (possibly piped) to Linux.
-    
+
     Args:
         command: The PowerShell command to translate
         use_ml: Whether to use machine learning suggestions
         use_plugins: Whether to use plugin translations
-    
+
     Returns:
         The Linux equivalent command
     """
     if not command.strip():
         return ""
-    
+
     # Try plugin translation first
     if use_plugins:
         plugin_translation = plugin_manager.translate_with_plugins(command, "ps2lnx")
         if plugin_translation:
             ml_engine.learn_pattern(command, plugin_translation, "ps2lnx", success=True)
             return plugin_translation
-    
+
     # Try ML translation
     if use_ml:
         ml_translation = ml_engine.get_best_translation(command, "ps2lnx")
         if ml_translation:
             return ml_translation
-    
+
     # Parse command with AST
     ast_root = parser.parse(command)
-    
+
     stages = [stage.strip() for stage in command.split('|')]
     translated = []
     for stage in stages:
@@ -195,11 +195,11 @@ def ps2lnx(command: str, use_ml: bool = True, use_plugins: bool = True) -> str:
                     translated.append(f"# [No Linux equivalent for: {stage}]")
             else:
                 translated.append(f"# [No Linux equivalent for: {stage}]")
-    
+
     result = " | ".join(translated)
-    
+
     # Learn the pattern
     if use_ml:
         ml_engine.learn_pattern(command, result, "ps2lnx", success=True)
-    
+
     return result
