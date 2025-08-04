@@ -4,8 +4,8 @@
 import re
 import shlex
 from enum import Enum
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple, Union
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple, Union, Any
 
 
 class NodeType(Enum):
@@ -24,14 +24,8 @@ class ASTNode:
 
     node_type: NodeType
     value: str
-    children: List["ASTNode"] = None
-    metadata: Dict = None
-
-    def __post_init__(self):
-        if self.children is None:
-            self.children = []
-        if self.metadata is None:
-            self.metadata = {}
+    children: List["ASTNode"] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class CommandParser:

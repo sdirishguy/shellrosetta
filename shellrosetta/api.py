@@ -7,11 +7,11 @@ try:
     FLASK_AVAILABLE = True
 except ImportError:
     FLASK_AVAILABLE = False
-    Flask = None
-    request = None
-    jsonify = None
-    render_template_string = None
-    CORS = None
+    Flask = None  # type: ignore
+    request = None  # type: ignore
+    jsonify = None  # type: ignore
+    render_template_string = None  # type: ignore
+    CORS = None  # type: ignore
 
 from .core import lnx2ps, ps2lnx
 from .ml_engine import ml_engine

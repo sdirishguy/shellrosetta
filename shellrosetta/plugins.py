@@ -54,7 +54,7 @@ class PluginManager:
         self.plugin_dir.mkdir(parents=True, exist_ok=True)
         self.load_plugins()
 
-    def load_plugins(self):
+    def load_plugins(self) -> None:
         """Load all available plugins"""
         # Load built-in plugins
         self._load_builtin_plugins()
@@ -62,7 +62,7 @@ class PluginManager:
         # Load user plugins
         self._load_user_plugins()
 
-    def _load_builtin_plugins(self):
+    def _load_builtin_plugins(self) -> None:
         """Load built-in plugins"""
         # Create plugin instances directly instead of importing modules
         self.plugins["docker"] = docker_plugin
@@ -70,15 +70,18 @@ class PluginManager:
         self.plugins["aws"] = aws_plugin
         self.plugins["git"] = git_plugin
 
-    def _load_user_plugins(self):
+    def _load_user_plugins(self) -> None:
         """Load user-installed plugins"""
         for plugin_file in self.plugin_dir.glob("*.py"):
             try:
                 spec = importlib.util.spec_from_file_location(
                     plugin_file.stem, plugin_file
                 )
+                if spec is None:
+                    continue
                 module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
+                if spec.loader is not None:
+                    spec.loader.exec_module(module)
 
                 if hasattr(module, "plugin"):
                     plugin = module.plugin

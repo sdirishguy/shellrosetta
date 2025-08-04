@@ -88,7 +88,7 @@ class MLEngine:
 
         self.load_data()
 
-    def load_data(self):
+    def load_data(self) -> None:
         """Load learned patterns and context"""
         # Load patterns
         if self.patterns_file.exists():
@@ -116,7 +116,7 @@ class MLEngine:
             except Exception as e:
                 print(f"Failed to load suggestions: {e}")
 
-    def save_data(self):
+    def save_data(self) -> None:
         """Save learned patterns and context"""
         # Save patterns
         patterns_data = {}
@@ -145,7 +145,7 @@ class MLEngine:
 
     def learn_pattern(
         self, command: str, translation: str, direction: str, success: bool = True
-    ):
+    ) -> None:
         """Learn a new command pattern"""
         key = f"{direction}:{command}"
 
@@ -282,7 +282,7 @@ class MLEngine:
         )
 
         # Most common command types
-        command_types = Counter()
+        command_types: Counter[str] = Counter()
         for pattern in self.patterns.values():
             command_types[self._classify_command(pattern.command)] += 1
 
