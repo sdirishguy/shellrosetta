@@ -2,6 +2,7 @@
 
 
 from typing import Optional, Tuple
+from .mappings import (
     LINUX_TO_PS, PS_TO_LINUX,
     LS_FLAGS_MAP, RM_FLAGS_MAP, CP_FLAGS_MAP, MV_FLAGS_MAP,
     GREP_FLAGS_MAP, FIND_FLAGS_MAP, CAT_FLAGS_MAP

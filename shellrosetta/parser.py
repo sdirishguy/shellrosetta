@@ -2,7 +2,11 @@
 
 
 import re
+import shlex
+from enum import Enum
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
+
 class NodeType(Enum):
     COMMAND = "command"
     ARGUMENT = "argument"
