@@ -7,6 +7,7 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
 
+
 class NodeType(Enum):
     COMMAND = "command"
     ARGUMENT = "argument"
@@ -16,12 +17,14 @@ class NodeType(Enum):
     SUBSTITUTION = "substitution"
     CONDITIONAL = "conditional"
 
+
 @dataclass
 class ASTNode:
     """Abstract Syntax Tree node for command parsing"""
+
     node_type: NodeType
     value: str
-    children: List['ASTNode'] = None
+    children: List["ASTNode"] = None
     metadata: Dict = None
 
     def __post_init__(self):
@@ -35,10 +38,10 @@ class CommandParser:
     """Advanced command parser with AST generation"""
 
     def __init__(self):
-        self.variable_pattern = re.compile(r'\$(\w+)')
-        self.substitution_pattern = re.compile(r'\$\(([^)]+)\)')
-        self.redirect_pattern = re.compile(r'([><])([^|&]*?)(?:\||$)')
-        self.conditional_pattern = re.compile(r'([&|]{2})')
+        self.variable_pattern = re.compile(r"\$(\w+)")
+        self.substitution_pattern = re.compile(r"\$\(([^)]+)\)")
+        self.redirect_pattern = re.compile(r"([><])([^|&]*?)(?:\||$)")
+        self.conditional_pattern = re.compile(r"([&|]{2})")
 
     def parse(self, command: str) -> ASTNode:
         """Parse a command string into an AST"""
@@ -46,7 +49,7 @@ class CommandParser:
             return ASTNode(NodeType.COMMAND, "", [])
 
         # Split by pipes first
-        pipe_parts = command.split('|')
+        pipe_parts = command.split("|")
         if len(pipe_parts) == 1:
             return self._parse_single_command(command.strip())
 
@@ -77,10 +80,10 @@ class CommandParser:
 
         # Parse arguments and flags
         for token in tokens[1:]:
-            if token.startswith('-'):
+            if token.startswith("-"):
                 flag_node = ASTNode(NodeType.FLAG, token, [])
                 cmd_node.children.append(flag_node)
-            elif token in ['>', '>>', '<', '2>', '&>']:
+            elif token in [">", ">>", "<", "2>", "&>"]:
                 redirect_node = ASTNode(NodeType.REDIRECT, token, [])
                 cmd_node.children.append(redirect_node)
             else:
@@ -91,6 +94,7 @@ class CommandParser:
 
     def _expand_variables(self, command: str) -> str:
         """Expand environment variables in command"""
+
         def replace_var(match):
             var_name = match.group(1)
             # In a real implementation, you'd get the actual env var
@@ -142,6 +146,7 @@ class CommandParser:
             if child.node_type == NodeType.REDIRECT:
                 redirects.append((child.value, ""))
         return redirects
+
 
 # Global parser instance
 parser = CommandParser()

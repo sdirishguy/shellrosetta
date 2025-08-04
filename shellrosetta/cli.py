@@ -3,10 +3,16 @@
 from .config import config
 from .plugins import plugin_manager
 from .ml_engine import ml_engine
-from .utils import print_header, print_translation, sanitize_command, format_command_history
+from .utils import (
+    print_header,
+    print_translation,
+    sanitize_command,
+    format_command_history,
+)
 from .api import run_api_server
 
 import sys
+
 try:
     import readline
 except ImportError:
@@ -14,11 +20,13 @@ except ImportError:
     pass
 
 from .core import lnx2ps, ps2lnx
+
+
 def show_help():
     print_header()
     print("Usage:")
-    print("  shellrosetta lnx2ps \"linux command here\"")
-    print("  shellrosetta ps2lnx \"powershell command here\"")
+    print('  shellrosetta lnx2ps "linux command here"')
+    print('  shellrosetta ps2lnx "powershell command here"')
     print("  shellrosetta          # Interactive shell mode")
     print("  shellrosetta config   # Show configuration")
     print("  shellrosetta history  # Show command history")
@@ -27,8 +35,8 @@ def show_help():
     print("  shellrosetta ml       # Show ML insights")
     print("")
     print("Examples:")
-    print("  shellrosetta lnx2ps \"ls -alh | grep foo\"")
-    print("  shellrosetta ps2lnx \"Get-ChildItem -Force | Select-String foo\"")
+    print('  shellrosetta lnx2ps "ls -alh | grep foo"')
+    print('  shellrosetta ps2lnx "Get-ChildItem -Force | Select-String foo"')
     print("  shellrosetta api --port 8080  # Start API on port 8080")
     print("=" * 65)
 
@@ -36,7 +44,9 @@ def show_help():
 def run_interactive():
     print_header()
     print("Welcome to ShellRosetta Interactive Mode!")
-    print("Type 'exit' to quit, 'mode' to switch translation direction, or 'help' for commands.")
+    print(
+        "Type 'exit' to quit, 'mode' to switch translation direction, or 'help' for commands."
+    )
 
     # Initialize history
     history = []
@@ -52,7 +62,9 @@ def run_interactive():
             show_interactive_help()
             continue
 
-    print(f"Type your {mode.upper()} commands below. Type 'mode' to switch, 'exit' to quit.\n")
+    print(
+        f"Type your {mode.upper()} commands below. Type 'mode' to switch, 'exit' to quit.\n"
+    )
 
     while True:
         try:
@@ -107,7 +119,7 @@ def run_interactive():
 
         # Store in history
         history.append((sanitized, translated, mode))
-        if len(history) > config.get('max_history', 100):
+        if len(history) > config.get("max_history", 100):
             history.pop(0)
 
         # Print translation
@@ -144,7 +156,7 @@ def show_plugins():
         for plugin in plugins:
             print(f"  {plugin['name']} v{plugin['version']}")
             print(f"    Commands: {', '.join(plugin['supported_commands'])}")
-            if plugin.get('description'):
+            if plugin.get("description"):
                 print(f"    Description: {plugin['description']}")
             print()
     else:
@@ -162,7 +174,7 @@ def show_ml_insights():
         print(f"  Success Rate: {analysis.get('success_rate', 0):.1%}")
         print(f"  Command Types: {dict(analysis.get('command_types', {}))}")
 
-        top_patterns = analysis.get('top_successful_patterns', [])
+        top_patterns = analysis.get("top_successful_patterns", [])
         if top_patterns:
             print("\n  Top Successful Patterns:")
             for cmd, rate in top_patterns[:5]:
@@ -180,22 +192,22 @@ def main():
 
     # Handle special commands
     if len(sys.argv) == 2:
-        if sys.argv[1] in ('-h', '--help', 'help'):
+        if sys.argv[1] in ("-h", "--help", "help"):
             show_help()
             sys.exit(0)
-        elif sys.argv[1] == 'config':
+        elif sys.argv[1] == "config":
             show_config()
             sys.exit(0)
-        elif sys.argv[1] == 'history':
+        elif sys.argv[1] == "history":
             print("History feature not yet implemented for non-interactive mode.")
             sys.exit(0)
-        elif sys.argv[1] == 'plugins':
+        elif sys.argv[1] == "plugins":
             show_plugins()
             sys.exit(0)
-        elif sys.argv[1] == 'ml':
+        elif sys.argv[1] == "ml":
             show_ml_insights()
             sys.exit(0)
-        elif sys.argv[1] == 'api':
+        elif sys.argv[1] == "api":
             run_api_server()
             return
 
@@ -204,7 +216,7 @@ def main():
         sys.exit(1)
 
     mode = sys.argv[1].lower()
-    if mode not in ['lnx2ps', 'ps2lnx']:
+    if mode not in ["lnx2ps", "ps2lnx"]:
         print("Unknown mode:", mode)
         show_help()
         sys.exit(1)
@@ -223,6 +235,7 @@ def main():
     else:
         translated = ps2lnx(sanitized)
         print_translation(command, translated, mode)
+
 
 # Allow both python -m and entry point execution
 if __name__ == "__main__" or __name__ == "shellrosetta.cli":

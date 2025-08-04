@@ -4,6 +4,7 @@
 import unittest
 from shellrosetta.core import lnx2ps, ps2lnx
 
+
 class TestShellRosettaCore(unittest.TestCase):
     def test_ls_translation(self):
         self.assertIn("Get-ChildItem", lnx2ps("ls"))
@@ -86,5 +87,6 @@ class TestShellRosettaCore(unittest.TestCase):
         self.assertIn("Select-String error", result)
         self.assertIn("Measure-Object", result)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

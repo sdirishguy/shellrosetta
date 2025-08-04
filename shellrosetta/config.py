@@ -2,6 +2,8 @@
 from pathlib import Path
 import os
 import json
+
+
 class Config:
     """Configuration management for ShellRosetta"""
 
@@ -14,7 +16,7 @@ class Config:
             "preferred_shell": "auto",  # auto, powershell, bash
             "color_output": True,
             "max_history": 100,
-            "auto_complete": True
+            "auto_complete": True,
         }
         self.config = self.load_config()
 
@@ -22,7 +24,7 @@ class Config:
         """Load configuration from file or create default"""
         if self.config_file.exists():
             try:
-                with open(self.config_file, 'r') as f:
+                with open(self.config_file, "r") as f:
                     config = json.load(f)
                     # Merge with defaults for any missing keys
                     for key, value in self.default_config.items():
@@ -42,7 +44,7 @@ class Config:
         if config is None:
             config = self.config
         try:
-            with open(self.config_file, 'w') as f:
+            with open(self.config_file, "w") as f:
                 json.dump(config, f, indent=2)
         except IOError:
             pass  # Silently fail if we can't write config
@@ -60,6 +62,7 @@ class Config:
         """Reset to default configuration"""
         self.config = self.default_config.copy()
         self.save_config()
+
 
 # Global config instance
 config = Config()

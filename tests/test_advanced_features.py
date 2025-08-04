@@ -8,6 +8,8 @@ from shellrosetta.parser import CommandParser, ASTNode, NodeType
 from shellrosetta.plugins import CommandPlugin, PluginManager
 from shellrosetta.ml_engine import MLEngine, CommandPattern
 from shellrosetta.core import lnx2ps, ps2lnx
+
+
 class TestCommandParser(unittest.TestCase):
     """Test the advanced command parser"""
 
@@ -77,6 +79,7 @@ class TestPluginSystem(unittest.TestCase):
 
     def test_plugin_creation(self):
         """Test creating a custom plugin"""
+
         class TestPlugin(CommandPlugin):
             def get_name(self):
                 return "test"
@@ -141,7 +144,9 @@ class TestMLEngine(unittest.TestCase):
         # Clear existing patterns for this test
         self.ml_engine.patterns.clear()
 
-        self.ml_engine.learn_pattern("ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True)
+        self.ml_engine.learn_pattern(
+            "ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True
+        )
 
         # Check if pattern was learned
         key = "lnx2ps:ls -la"
@@ -156,7 +161,9 @@ class TestMLEngine(unittest.TestCase):
     def test_get_best_translation(self):
         """Test getting the best learned translation"""
         # Learn a pattern
-        self.ml_engine.learn_pattern("ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True)
+        self.ml_engine.learn_pattern(
+            "ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True
+        )
 
         # Get the translation
         result = self.ml_engine.get_best_translation("ls -la", "lnx2ps")
@@ -165,8 +172,12 @@ class TestMLEngine(unittest.TestCase):
     def test_get_suggestions(self):
         """Test getting suggestions for partial commands"""
         # Learn some patterns
-        self.ml_engine.learn_pattern("ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True)
-        self.ml_engine.learn_pattern("ls -lh", "Get-ChildItem | Format-List", "lnx2ps", success=True)
+        self.ml_engine.learn_pattern(
+            "ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True
+        )
+        self.ml_engine.learn_pattern(
+            "ls -lh", "Get-ChildItem | Format-List", "lnx2ps", success=True
+        )
 
         # Get suggestions
         suggestions = self.ml_engine.get_suggestions("ls -l", "lnx2ps", limit=5)
@@ -180,26 +191,34 @@ class TestMLEngine(unittest.TestCase):
         self.ml_engine.patterns.clear()
 
         # Learn some patterns
-        self.ml_engine.learn_pattern("ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True)
-        self.ml_engine.learn_pattern("ls -lh", "Get-ChildItem | Format-List", "lnx2ps", success=True)
+        self.ml_engine.learn_pattern(
+            "ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps", success=True
+        )
+        self.ml_engine.learn_pattern(
+            "ls -lh", "Get-ChildItem | Format-List", "lnx2ps", success=True
+        )
 
         # Analyze patterns
         analysis = self.ml_engine.analyze_patterns()
 
-        self.assertIn('total_patterns', analysis)
-        self.assertIn('success_rate', analysis)
-        self.assertIn('command_types', analysis)
+        self.assertIn("total_patterns", analysis)
+        self.assertIn("success_rate", analysis)
+        self.assertIn("command_types", analysis)
 
-        self.assertEqual(analysis['total_patterns'], 2)
-        self.assertEqual(analysis['success_rate'], 1.0)
+        self.assertEqual(analysis["total_patterns"], 2)
+        self.assertEqual(analysis["success_rate"], 1.0)
 
     def test_command_classification(self):
         """Test command type classification"""
         self.assertEqual(self.ml_engine._classify_command("ls -la"), "file_listing")
         self.assertEqual(self.ml_engine._classify_command("grep error"), "search")
-        self.assertEqual(self.ml_engine._classify_command("cp file1 file2"), "file_operation")
+        self.assertEqual(
+            self.ml_engine._classify_command("cp file1 file2"), "file_operation"
+        )
         self.assertEqual(self.ml_engine._classify_command("docker ps"), "container")
-        self.assertEqual(self.ml_engine._classify_command("git commit"), "version_control")
+        self.assertEqual(
+            self.ml_engine._classify_command("git commit"), "version_control"
+        )
         self.assertEqual(self.ml_engine._classify_command("unknown command"), "general")
 
 
@@ -234,7 +253,9 @@ class TestCommandPattern(unittest.TestCase):
 
     def test_pattern_creation(self):
         """Test creating a command pattern"""
-        pattern = CommandPattern("ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps")
+        pattern = CommandPattern(
+            "ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps"
+        )
 
         self.assertEqual(pattern.command, "ls -la")
         self.assertEqual(pattern.translation, "Get-ChildItem -Force | Format-List")
@@ -259,7 +280,9 @@ class TestCommandPattern(unittest.TestCase):
 
     def test_pattern_serialization(self):
         """Test pattern serialization and deserialization"""
-        pattern = CommandPattern("ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps")
+        pattern = CommandPattern(
+            "ls -la", "Get-ChildItem -Force | Format-List", "lnx2ps"
+        )
         pattern.record_success()
         pattern.record_failure()
 
@@ -275,5 +298,6 @@ class TestCommandPattern(unittest.TestCase):
         self.assertEqual(new_pattern.success_count, pattern.success_count)
         self.assertEqual(new_pattern.failure_count, pattern.failure_count)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

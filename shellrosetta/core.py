@@ -3,9 +3,15 @@ import shlex
 from typing import Optional, Tuple
 
 from .mappings import (
-    LINUX_TO_PS, PS_TO_LINUX,
-    LS_FLAGS_MAP, RM_FLAGS_MAP, CP_FLAGS_MAP, MV_FLAGS_MAP,
-    GREP_FLAGS_MAP, FIND_FLAGS_MAP, CAT_FLAGS_MAP
+    LINUX_TO_PS,
+    PS_TO_LINUX,
+    LS_FLAGS_MAP,
+    RM_FLAGS_MAP,
+    CP_FLAGS_MAP,
+    MV_FLAGS_MAP,
+    GREP_FLAGS_MAP,
+    FIND_FLAGS_MAP,
+    CAT_FLAGS_MAP,
 )
 
 from .plugins import plugin_manager
@@ -21,7 +27,7 @@ def extract_flags_and_targets(args):
     flags = []
     targets = []
     for arg in args:
-        if arg.startswith('-'):
+        if arg.startswith("-"):
             flags.append(arg)
         else:
             targets.append(arg)
@@ -121,7 +127,7 @@ def lnx2ps(command: str, use_ml: bool = True, use_plugins: bool = True) -> str:
     # Parse command with AST
     ast_root = parser.parse(command)
 
-    stages = [stage.strip() for stage in command.split('|')]
+    stages = [stage.strip() for stage in command.split("|")]
     translated = []
     for stage in stages:
         if not stage:
@@ -181,7 +187,7 @@ def ps2lnx(command: str, use_ml: bool = True, use_plugins: bool = True) -> str:
     # Parse command with AST
     ast_root = parser.parse(command)
 
-    stages = [stage.strip() for stage in command.split('|')]
+    stages = [stage.strip() for stage in command.split("|")]
     translated = []
     for stage in stages:
         if not stage:

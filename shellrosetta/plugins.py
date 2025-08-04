@@ -40,8 +40,8 @@ class CommandPlugin(ABC):
             "name": self.get_name(),
             "version": self.get_version(),
             "supported_commands": self.get_supported_commands(),
-            "description": getattr(self, 'description', ''),
-            "author": getattr(self, 'author', ''),
+            "description": getattr(self, "description", ""),
+            "author": getattr(self, "author", ""),
         }
 
 
@@ -80,13 +80,15 @@ class PluginManager:
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                if hasattr(module, 'plugin'):
+                if hasattr(module, "plugin"):
                     plugin = module.plugin
                     self.plugins[plugin.get_name()] = plugin
             except Exception as e:
                 print(f"Failed to load plugin {plugin_file}: {e}")
 
-    def get_plugin_for_command(self, command: str, direction: str) -> Optional[CommandPlugin]:
+    def get_plugin_for_command(
+        self, command: str, direction: str
+    ) -> Optional[CommandPlugin]:
         """Find a plugin that can handle the given command"""
         for plugin in self.plugins.values():
             supported_commands = plugin.get_supported_commands()
@@ -123,6 +125,7 @@ class PluginManager:
         except Exception as e:
             print(f"Failed to install plugin: {e}")
             return False
+
 
 # Example built-in plugins
 
@@ -216,6 +219,7 @@ class GitPlugin(CommandPlugin):
 
         # Git commands are generally the same across platforms
         return command
+
 
 # Create plugin instances
 docker_plugin = DockerPlugin()
