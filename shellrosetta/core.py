@@ -1,12 +1,17 @@
 # shellrosetta/core.py
-
-
+import shlex
 from typing import Optional, Tuple
+
 from .mappings import (
     LINUX_TO_PS, PS_TO_LINUX,
     LS_FLAGS_MAP, RM_FLAGS_MAP, CP_FLAGS_MAP, MV_FLAGS_MAP,
     GREP_FLAGS_MAP, FIND_FLAGS_MAP, CAT_FLAGS_MAP
 )
+
+from .plugins import plugin_manager
+from .ml_engine import ml_engine
+from .parser import parser
+
 
 def extract_flags_and_targets(args):
     """

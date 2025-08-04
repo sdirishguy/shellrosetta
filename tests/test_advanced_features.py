@@ -1,6 +1,8 @@
 # tests/test_advanced_features.py
-
+from pathlib import Path
+import shutil
 import unittest
+import tempfile
 import json
 from shellrosetta.parser import CommandParser, ASTNode, NodeType
 from shellrosetta.plugins import CommandPlugin, PluginManager
