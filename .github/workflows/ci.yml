@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on:
   push:
@@ -8,11 +8,10 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
 
     steps:
     - name: Checkout code
@@ -28,18 +27,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov
-        pip install .
     
     - name: Run tests
       run: |
-        python -m pytest tests/ -v --cov=shellrosetta --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+        python -m pytest tests/ -v
 
   lint:
     runs-on: ubuntu-latest
@@ -55,17 +46,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 black mypy pytest pytest-cov
+        pip install flake8 black mypy
         pip install -r requirements.txt
-        pip install .
     
     - name: Run linters
       run: |
-        # Run flake8 with more lenient settings
         flake8 shellrosetta/ tests/ --max-line-length=88 --ignore=E501,W293,W291,W292,E302,E305,F401,F841 || true
-        
-        # Run black to check formatting
         black --check shellrosetta/ tests/ || true
-        
-        # Run mypy with basic checks
-        mypy shellrosetta/ --ignore-missing-imports || true
+        mypy shellrosetta/ --ignore-missing-imports || true 

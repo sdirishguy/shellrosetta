@@ -1,6 +1,6 @@
 # tests/test_advanced_features.py
 
-
+import unittest
 import json
 from shellrosetta.parser import CommandParser, ASTNode, NodeType
 from shellrosetta.plugins import CommandPlugin, PluginManager
