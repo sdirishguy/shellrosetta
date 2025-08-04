@@ -1,4 +1,4 @@
-# ShellRosetta
+# ShellRosetta Project Analysis & Implementation Summary
 
 **Translate Linux/Bash commands to PowerShell and vice versa—flags, pipes, networking, and more.**
 
