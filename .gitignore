@@ -48,3 +48,14 @@ htmlcov/
 # Other
 *.log
 .docxCommand.docx
+
+# Virtual environment (add this specific name)
+shellrosetta-env/
+
+# Enhanced logging
+.shellrosetta/
+*.db
+*.sqlite
+
+# Enhanced features
+backup_*/

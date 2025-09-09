@@ -1,12 +1,17 @@
-# shellrosetta/utils.py
+"""Utility functions for ShellRosetta.
 
-from .config import config
+This module provides utility functions for formatting, display,
+and command processing.
+"""
 import os
 import sys
+from typing import Optional
+
+from .config import config
 
 
 class Colors:
-    """ANSI color codes for terminal output"""
+    """ANSI color codes for terminal output."""
 
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
@@ -20,14 +25,14 @@ class Colors:
 
 
 def colored(text, color):
-    """Return colored text if color output is enabled"""
+    """Return colored text if color output is enabled."""
     if config.get("color_output", True) and sys.stdout.isatty():
         return f"{color}{text}{Colors.ENDC}"
     return text
 
 
 def print_header():
-    """Print the ShellRosetta header with optional colors"""
+    """Print the ShellRosetta header with optional colors."""
     header = "=" * 65
     title = "ShellRosetta: Linux ↔ PowerShell CLI Command Translator"
     author = "Author: David Donohue"
@@ -40,8 +45,8 @@ def print_header():
     print(colored(header, Colors.HEADER))
 
 
-def print_translation(original, translated, direction):
-    """Print translation with formatting"""
+def print_translation(original, translated, direction):  # pylint: disable=unused-argument
+    """Print translation with formatting."""
     print(f"\n{colored('--- Translation ---', Colors.OKCYAN)}")
 
     if direction == "lnx2ps":
@@ -54,19 +59,19 @@ def print_translation(original, translated, direction):
 
 
 def print_warning(message):
-    """Print a warning message"""
+    """Print a warning message."""
     if config.get("show_warnings", True):
         print(f"{colored('⚠️  Warning:', Colors.WARNING)} {message}")
 
 
 def print_note(message):
-    """Print a note message"""
+    """Print a note message."""
     if config.get("show_notes", True):
         print(f"{colored('📝 Note:', Colors.OKBLUE)} {message}")
 
 
 def detect_shell():
-    """Detect the current shell environment"""
+    """Detect the current shell environment."""
     shell = os.environ.get("SHELL", "").lower()
     if "powershell" in shell or "pwsh" in shell:
         return "powershell"
@@ -76,19 +81,20 @@ def detect_shell():
         return "unknown"
 
 
-def sanitize_command(command):
-    """Sanitize command input for safe processing"""
+def sanitize_command(command: str) -> Optional[str]:
+    """Sanitize command input for safe processing."""
     # Remove any potentially dangerous characters
     dangerous_chars = [";", "&&", "||", "`", "$("]
     for char in dangerous_chars:
         if char in command:
-            print_warning(f"Command contains potentially dangerous character: {char}")
+            msg = f"Command contains potentially dangerous character: {char}"
+            print_warning(msg)
             return None
     return command.strip()
 
 
 def format_command_history(history):
-    """Format command history for display"""
+    """Format command history for display."""
     if not history:
         return "No commands in history"
 

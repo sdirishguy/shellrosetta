@@ -1,4 +1,9 @@
-# shellrosetta/cli.py
+"""Command-line interface for ShellRosetta.
+
+This module provides the CLI interface for translating between
+Linux and PowerShell commands.
+"""
+import sys
 
 from .config import config
 from .plugins import plugin_manager
@@ -11,10 +16,8 @@ from .utils import (
 )
 from .api import run_api_server
 
-import sys
-
 try:
-    import readline
+    import readline  # noqa: F401  # pylint: disable=unused-import
 except ImportError:
     # readline not available on Windows
     pass
@@ -23,6 +26,7 @@ from .core import lnx2ps, ps2lnx
 
 
 def show_help():
+    """Display help information for the CLI."""
     print_header()
     print("Usage:")
     print('  shellrosetta lnx2ps "linux command here"')
@@ -42,10 +46,12 @@ def show_help():
 
 
 def run_interactive():
+    """Run the interactive shell mode."""
     print_header()
     print("Welcome to ShellRosetta Interactive Mode!")
     print(
-        "Type 'exit' to quit, 'mode' to switch translation direction, or 'help' for commands."
+        "Type 'exit' to quit, 'mode' to switch translation direction, "
+        "or 'help' for commands."
     )
 
     # Initialize history
@@ -63,7 +69,8 @@ def run_interactive():
             continue
 
     print(
-        f"Type your {mode.upper()} commands below. Type 'mode' to switch, 'exit' to quit.\n"
+        f"Type your {mode.upper()} commands below. Type 'mode' to switch, "
+        "'exit' to quit.\n"
     )
 
     while True:
@@ -94,7 +101,8 @@ def run_interactive():
         elif inp.lower() == "mode":
             # Allow switching translation direction anytime
             while True:
-                mode = input("Mode [lnx2ps/ps2lnx] (or 'exit'): ").strip().lower()
+                prompt = "Mode [lnx2ps/ps2lnx] (or 'exit'): "
+                mode = input(prompt).strip().lower()
                 if mode == "exit":
                     print("Goodbye!")
                     return
@@ -185,6 +193,7 @@ def show_ml_insights():
 
 
 def main():
+    """Main entry point for the CLI application."""
     # If no args, drop into interactive mode
     if len(sys.argv) == 1:
         run_interactive()
@@ -199,7 +208,10 @@ def main():
             show_config()
             sys.exit(0)
         elif sys.argv[1] == "history":
-            print("History feature not yet implemented for non-interactive mode.")
+            msg = (
+                "History feature not yet implemented for non-interactive mode"
+            )
+            print(msg)
             sys.exit(0)
         elif sys.argv[1] == "plugins":
             show_plugins()
